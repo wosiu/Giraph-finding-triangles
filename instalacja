@@ -1,0 +1,24 @@
+#instalacja giraph i odpalenie exampla:
+
+cd /opt
+sudo git clone https://github.com/apache/giraph.git
+cd giraph
+
+# dla hadoopa z turtoriala:
+mvn package -DskipTests
+# dla hadoopa 2.6.0:
+# mvn -Phadoop_yarn -Dhadoop.version=2.6.0 -DskipTests package
+
+echo "GIRAPH_HOME=/opt/giraph" >> /etc/environment
+
+# zakladam, ze hadoop juz chodzi
+
+${HADOOP_PATH}/bin/hadoop dfs -copyFromLocal input_example.in /input
+
+${HADOOP_PATH}/bin/hadoop jar /opt/giraph/giraph-examples/target/giraph-examples-1.2.0-SNAPSHOT-for-hadoop-1.2.1-jar-with-dependencies.jar org.apache.giraph.GiraphRunner org.apache.giraph.examples.SimpleShortestPathsComputation -vif org.apache.giraph.io.formats.JsonLongDoubleFloatDoubleVertexInputFormat -vip /input -vof org.apache.giraph.io.formats.IdWithValueTextOutputFormat -op /output -w 1
+
+${HADOOP_PATH}/bin/hadoop dfs -cat /output/part*
+
+
+
+
